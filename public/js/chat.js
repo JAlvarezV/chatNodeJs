@@ -1,12 +1,26 @@
 var socket = io();
 var escritores = [];
 $(document).ready(function () {
-    userName = prompt("Introduce tu nick");
+    username="";
+    $('.modal').modal({
+            dismissible: false, // Modal can be dismissed by clicking outside of the modal
+            opacity: .5, // Opacity of modal background
+            inDuration: 300, // Transition in duration
+            outDuration: 200, // Transition out duration
+            startingTop: '4%', // Starting top style attribute
+            endingTop: '10%', // Ending top style attribute
+            complete: function() { username = $('#ipt-username').val();} // Callback for Modal close
+        }
+    );
+
+    $('#modal1').modal('open');
     setInterval(function () {
         $('#info').html("Usuarios escribiendo: "+escritores.toString());
         escritores = [];
     },750);
 });
+
+
 
 socket.on("newmsg", function (data) {
     var tmp =  $("<li></li>").html(data.user+": "+data.msg);

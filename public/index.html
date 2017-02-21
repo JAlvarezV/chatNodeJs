@@ -14,19 +14,28 @@
     <script src="js/chat.js"></script>
 </head>
 <body>
-<!-- Page Layout here -->
 <div class="row">
-
+    <div id="modal1" class="modal">
+        <div class="modal-content">
+            <h4>Enter your username: </h4>
+            <input type="text" id="ipt-username" name="username">
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="modal-action modal-close waves-effect waves-green btn-flat">Agree</a>
+        </div>
+    </div>
     <div class="col s12 m4 l3">
         <ul id="slide-out" class="side-nav fixed">
-            <li><div class="userView">
+            <li>
+                <div class="userView">
                 <div class="background">
                     <img src="images/office.jpg">
                 </div>
                 <a href="#!user"><img class="circle" src="images/yuna.jpg"></a>
                 <a href="#!name"><span class="white-text name">John Doe</span></a>
                 <a href="#!email"><span class="white-text email">jdandturk@gmail.com</span></a>
-            </div></li>
+                </div>
+            </li>
             <li><a href="#!"><i class="material-icons">cloud</i>First Link With Icon</a></li>
             <li><a href="#!">Second Link</a></li>
             <li><div class="divider"></div></li>
@@ -36,9 +45,8 @@
     </div>
 
     <div class="col s12 m8 l9">
-            <h1>Aquí se cargan las conversaciones </h1>
-    </div>
 
+    </div>
 </div>
 </body>
 </html>

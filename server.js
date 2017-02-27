@@ -32,10 +32,14 @@ io.on('connection', function(socket){
         connectCounter--;
         console.log('Se ha desconectado un usuario('+connectCounter+').');
         console.log('Se ha desconectado el usuario('+socket.username+')');
-        for(var i=0;i<clients.length;i++){
-            if(clients[i][0]==socket.username){
-                clients = clients.slice(i,1);
-                break;
+        if(clients.length<=1){
+            clients = [];
+        }else{
+            for(var i=0;i<clients.length;i++){
+                if(clients[i][0]==socket.username){
+                    clients = clients.slice(i,1);
+                    break;
+                }
             }
         }
         io.emit("leaving user",socket.username, connectCounter);

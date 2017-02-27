@@ -133,7 +133,7 @@ function sendUsername() {
     return true;
 }
 
-function generateFriend(uname,uimage,status+ç) {
+function generateFriend(uname,uimage,status) {
     if(uname!=username){
         var df = $('<div></div>').addClass("friend col-xs-12");
         var df2 = $('<div></div>').addClass("col-xs-3");

@@ -15,7 +15,7 @@ app.get('/', function(req, res){
 io.on('connection', function(socket){
     connectCounter++;
     console.log('Se ha conectado un usuario('+connectCounter+').');
-    socket.broadcast.emit("new user","Se ha conectado un nuevo usuario. Usuarios totales: "+connectCounter);
+    io.emit("new user",connectCounter);
 
     socket.on("usernameInput" , function (username) {
         socket.username= username;
@@ -26,17 +26,17 @@ io.on('connection', function(socket){
         connectCounter--;
         console.log('Se ha desconectado un usuario('+connectCounter+').');
         console.log('Se ha desconectado el usuario('+socket.username+')');
-        socket.broadcast.emit("leaving user",socket.username);
+        io.emit("leaving user",socket.username, connectCounter);
 
     });
 
     socket.on("mensaje", function (data) {
         console.log("Se ha recibido el mensaje: "+data.msg+" del usuario "+data.user);
-        io.sockets.emit("newmsg", data);
+        io.emit("newmsg", data);
     });
 
     socket.on("writing", function (data) {
-        io.sockets.emit("user writing", data);
+        io.emit("user writing", data);
     });
 });
 

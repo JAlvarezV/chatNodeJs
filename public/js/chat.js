@@ -95,7 +95,6 @@ function init_socket() {
     });
 
     socket.on("update users",function (data) {
-        console.log(data);
         clearFriendList();
         for(var i=0;i<data.length;i++){
             generateFriend(data[i][0],data[i][1],data[i][2]);

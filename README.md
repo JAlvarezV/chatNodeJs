@@ -1,1 +1,3 @@
-Chat con NodeJs y librería Socket.io
+Chat con NodeJs y librerÃ­a Socket.io
+
+URL del proyecto: https://chat-node-js-jcav.herokuapp.com/

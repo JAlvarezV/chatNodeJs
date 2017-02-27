@@ -1,17 +1,36 @@
 $(document).ready(function () {
     username="";
     escritores = [];
+    userStatus= "";
+
     $('#myModal').modal({
         keyboard: false,
         backdrop: "static",
         show: true
     });
 
+    var images = $('#user-images-selector').find('img');
+    selectedImage=images[0];
+    $(selectedImage).css("border","2px solid #3a9fc4");
+    $(selectedImage).css("border-radius","5px");
+
+    images.click(function (e) {
+        if($(selectedImage)!="") {
+            $(selectedImage).css("border","");
+            selectedImage = $(e.target);
+            $(e.target).css("border","2px solid #3a9fc4");
+            $(e.target).css("border-radius","5px");
+        }
+    });
 
     $('#bt-username').on("click",function (e) {
         e.preventDefault();
         username = $('#i-username').val();
+        userStatus = $('#i-status').val();
         if(username!=""){
+            $('#user-image').attr("src",selectedImage.attr("src"));
+            $('#user-name').text(username);
+            $('#user-status').text(userStatus);
             init_socket();
             if(sendUsername()){
                 $('#myModal').modal('hide');
@@ -28,53 +47,38 @@ $(document).ready(function () {
 function init_checkWriting() {
     setInterval(function () {
         if(escritores.length>1){
-            $('#users-writing').html("<p>"+escritores.toString()+" are writing..."+"</p>");
+            $('#chat-info').html("<p>"+escritores.toString()+" are writing..."+"</p>");
         }else if(escritores.length==1){
-            $('#users-writing').html("<p>"+escritores.toString()+" is writing..."+"</p>");
+            $('#chat-info').html("<p>"+escritores.toString()+" is writing..."+"</p>");
         }
         else{
-            $('#users-writing').html("");
+            $('#chat-info').html("");
         }
-            escritores = [];
+        escritores = [];
+
 
     },1000);
 }
 
 function init_socket() {
     socket = io();
+
     socket.on("newmsg", function (data) {
         var date = new Date();
         var time = date.getHours()+":"+date.getMinutes()+":"+date.getSeconds();
-        var tmpli=$('<li></li>');
-        if(data.user == username){
-            tmpli =  $("<li></li>").addClass('i');
-
-        }else{
-            tmpli =  $("<li></li>").addClass('not-own-message');
-        }
-
-        var tmpDivHead = $('<div></div>').addClass('head').append($('<span></span>').addClass('time').text(" "+time+" ")).append($('<span></span>').addClass('name').text(" "+data.user));
-        var tmpDivMsg = $('<div></div>').addClass('message').text(data.msg);
-
-        tmpli.append(tmpDivHead);
-        tmpli.append(tmpDivMsg);
-
-
-        $('#chat-area').append(tmpli);
+        generateMessage(data.user,data.msg,time);
     });
 
-    socket.on("new user",function (data) {
-        var tmp = $('<p></p>');
-        tmp.text(data+" usuarios conectados");
-        $('#users-count').html(tmp);
+    socket.on("new user",function (username,status,uimage,connectCounter) {
+        //New user joined chat. Create sidebar info, show total users and generate info message in the chat
+        generateFriend(username,status,uimage)
+        $('#chat-connected-users').html("<span class=\"glyphicon glyphicon-user\" aria-hidden=\"true\"></span>"+" "+connectCounter);
+        generateMessageSystem("User "+username+" connected!");
     });
 
     socket.on("leaving user",function (nick,count) {
-        var tmp = $('<p></p>');
-        tmp.text(count+" usuarios conectados");
-        $('#users-count').html(tmp);
-        //Poner en el chat quien se ha pirado
-
+        $('#chat-connected-users').html("<span class=\"glyphicon glyphicon-user\" aria-hidden=\"true\"></span>"+" "+count);
+        generateMessageSystem("User "+nick+" disconnected!");
     });
 
     socket.on("user writing",function (data) {
@@ -88,6 +92,15 @@ function init_socket() {
         }
         if(valid)
             escritores.push(data);
+    });
+
+    socket.on("update users",function (data) {
+        console.log(data);
+        clearFriendList();
+        for(var i=0;i<data.length;i++){
+            generateFriend(data[i][0],data[i][1],data[i][2]);
+        }
+
     });
 
 
@@ -116,7 +129,62 @@ function sendMessage() {
 
 
 function sendUsername() {
-    socket.emit("usernameInput",username);
+    socket.emit("usernameInput",username,userStatus,selectedImage.attr("src"));
     return true;
+}
+
+function generateFriend(uname,uimage,status) {
+    if(uname!=username){
+        var df = $('<div></div>').addClass("friend col-xs-12");
+        var df2 = $('<div></div>').addClass("col-xs-3");
+        var img1 = $('<img>').addClass("img-circle").attr("src",uimage);
+        df2.append(img1);
+        var df3 = $('<div></div>').addClass("col-xs-9");
+        var p1 = $('<p></p>').addClass("friend-name").text(uname);
+        var p2 = $('<p></p>').addClass("friend-status").text(status);
+        df3.append(p1);
+        df3.append(p2);
+        df.append(df2);
+        df.append(df3);
+        $('#friends-container').append(df);
+    }
+}
+
+function clearFriendList() {
+    $('#friends-container').empty();
+}
+
+function generateMessage(uname,msg,time) {
+    var type = "";
+    if(uname == username){
+        type="message-o";
+    }else{
+        type="message-f";
+    }
+
+    var mcontainer = $('<div></div>').addClass("message-container col-xs-12");
+    var messagetype = $('<div></div>').addClass(type);
+    var mhead = $('<div></div>').addClass("header");
+    var mheadcontent = $('<p></p>').addClass("message-username").html("<strong>"+uname+"</strong>"+"<small><span class='glyphicon glyphicon-time' aria-hidden='true'></span> "+time+"</small>");
+
+    var separator = $('<div></div>').html("<hr>");
+    var cont = $('<div></div>').addClass("content").append($("<p></p>").text(msg));
+
+    mhead.append(mheadcontent);
+    messagetype.append(mhead);
+    messagetype.append(separator);
+    messagetype.append(cont);
+    mcontainer.append(messagetype);
+
+    $('#chat-area').append(mcontainer);
+}
+
+function generateMessageSystem(msg) {
+    var mcontainer = $('<div></div>').addClass("message-container col-xs-12");
+    var messagetype = $('<div></div>').addClass("message-s");
+    var cont = $('<div></div>').addClass("content").append($("<p></p>").text(msg));
+    messagetype.append(cont);
+    mcontainer.append(messagetype);
+    $('#chat-area').append(mcontainer);
 }
 

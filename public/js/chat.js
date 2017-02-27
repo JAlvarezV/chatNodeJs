@@ -10,7 +10,7 @@ $(document).ready(function () {
     });
 
     var images = $('#user-images-selector').find('img');
-    selectedImage=images[0];
+    selectedImage=$(images[0]);
     $(selectedImage).css("border","2px solid #3a9fc4");
     $(selectedImage).css("border-radius","5px");
 
@@ -133,7 +133,7 @@ function sendUsername() {
     return true;
 }
 
-function generateFriend(uname,uimage,status) {
+function generateFriend(uname,uimage,status+ç) {
     if(uname!=username){
         var df = $('<div></div>').addClass("friend col-xs-12");
         var df2 = $('<div></div>').addClass("col-xs-3");

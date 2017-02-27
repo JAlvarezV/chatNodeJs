@@ -28,7 +28,7 @@ $(document).ready(function () {
         username = $('#i-username').val();
         userStatus = $('#i-status').val();
         if(username!=""){
-            $('#user-image').attr("src",selectedImage.attr("src"));
+            $('#user-image').attr("src",$(selectedImage).attr("src"));
             $('#user-name').text(username);
             $('#user-status').text(userStatus);
             init_socket();
